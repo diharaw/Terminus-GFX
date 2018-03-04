@@ -23,11 +23,5 @@ set(GFX_HEADERS ${PROJECT_SOURCE_DIR}/include/gl/gl_core_4_5.h
 				${PROJECT_SOURCE_DIR}/src/gl/logger.h)
 
 add_library(Terminus-GFX ${GFX_HEADERS} ${GFX_SOURCE})				
-
-set_target_properties( Terminus-GFX
-    				   PROPERTIES
-    				   ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/lib"
-    				   LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/lib"
-					   RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin" )
 					   
 target_link_libraries(Terminus-GFX ${OPENGL_LIBRARIES})
