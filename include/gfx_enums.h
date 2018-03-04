@@ -186,7 +186,8 @@ namespace TextureFormat
 		R8_SNORM		   = 24,
         D32_FLOAT_S8_UINT  = 25,
         D24_FLOAT_S8_UINT  = 26,
-        D16_FLOAT          = 27
+        D16_FLOAT          = 27,
+		R32G32_FLOAT	   = 28,
     };
 };
 

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <string>
-#include "gfx_types.h"
+#include <gfx_types.h>
 
 class RenderDevice
 {
@@ -22,29 +22,31 @@ public:
 	IndexBuffer* create_index_buffer(const BufferCreateDesc& desc);
 	VertexArray* create_vertex_array(const VertexArrayCreateDesc& desc);
 	Texture2D* create_texture_2d(const Texture2DCreateDesc& desc);
-	TextureCube* CreateTextureCube(const TextureCubeCreateDesc& desc);
-	void GenerateMipMaps(Texture* texture);
-	void WaitForIdle();
+	TextureCube* create_texture_cube(const TextureCubeCreateDesc& desc);
+	void generate_mipmaps(Texture* texture);
+	void wait_for_idle();
 	UniformBuffer* create_uniform_buffer(const BufferCreateDesc& desc);
 	PipelineStateObject* create_pipeline_state_object(const PipelineStateObjectCreateDesc& desc);
 	RasterizerState* create_rasterizer_state(const RasterizerStateCreateDesc& desc);
 	SamplerState* create_sampler_state(const SamplerStateCreateDesc& desc);
 	DepthStencilState* create_depth_stencil_state(const DepthStencilStateCreateDesc& desc);
-	int UniformBufferAlignment();
+	int uniform_buffer_alignment();
 
-	void Destroy(Shader* shader);
-	void Destroy(ShaderProgram* program);
-	void Destroy(VertexBuffer* vertex_buffer);
-	void Destroy(IndexBuffer* index_buffer);
-	void Destroy(VertexArray* vertex_array);
-	void Destroy(UniformBuffer* buffer);
-	void Destroy(Texture* texture);
-	void Destroy(Framebuffer* framebuffer);
-	void Destroy(RasterizerState* state);
-	void Destroy(SamplerState* state);
-	void Destroy(DepthStencilState* state);
-    void Destroy(PipelineStateObject* pso);
+	void destroy(Shader* shader);
+	void destroy(ShaderProgram* program);
+	void destroy(VertexBuffer* vertex_buffer);
+	void destroy(IndexBuffer* index_buffer);
+	void destroy(VertexArray* vertex_array);
+	void destroy(UniformBuffer* buffer);
+	void destroy(Texture* texture);
+	void destroy(Framebuffer* framebuffer);
+	void destroy(RasterizerState* state);
+	void destroy(SamplerState* state);
+	void destroy(DepthStencilState* state);
+    void destroy(PipelineStateObject* pso);
 
+	void  texture_extents(Texture* texture, const int& mipSlice, int& width, int& height);
+	void  texture_data(Texture* texture, const int& mipSlice, const int& arraySlice, void* data);
 	void  bind_pipeline_state_object(PipelineStateObject* pso);
 	void  bind_texture(Texture* texture, uint32_t shader_stage, uint32_t slot);
 	void  bind_rasterizer_state(RasterizerState* state);

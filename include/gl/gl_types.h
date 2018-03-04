@@ -6,7 +6,7 @@
 
 //#if defined(GFX_BACKEND_GL4)
 
-#include "gl_core_4_5.h"
+#include <gl/gl_core_4_5.h>
 
 #define MAX_RENDER_TARGETS 16
 
@@ -38,6 +38,9 @@ struct Texture
     GLenum   gl_texture_target;
 	uint32_t mipLevels;
 	uint32_t arraySize;
+	GLenum internalFormat;
+	GLenum format;
+	GLenum type;
 };
 
 struct Texture1D : Texture

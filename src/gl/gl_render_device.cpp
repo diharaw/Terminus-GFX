@@ -1,5 +1,5 @@
-#include "RenderDevice.h"
-#include "gl_core_4_5.h"
+#include <gl/gl_render_device.h>
+#include <gl/gl_core_4_5.h>
 #include "utility.h"
 #include "logger.h"
 
@@ -23,9 +23,9 @@ case GL_OUT_OF_MEMORY:          error = "OUT_OF_MEMORY";          break;						  
 case GL_INVALID_FRAMEBUFFER_OPERATION:  error = "INVALID_FRAMEBUFFER_OPERATION";  break;		  \
 }																								  \
 																								  \
-std::string formatted_error = "OPENGL ERROR : ";                                                  \
-formatted_error += error;                                                                         \
-std::cout <<  "LINE:" << __LINE__ <<", FILE:" << __FILE__ << formatted_error << std::endl;        \
+std::string formatted_error = "OPENGL: ";														  \
+formatted_error = formatted_error + error;														  \
+LOG_ERROR(formatted_error);																		  \
 err = glGetError();																				  \
 }																								  \
 }
@@ -63,7 +63,8 @@ const GLenum kTextureFormatTable[][3] =
 	{ GL_R8_SNORM,		  GL_RED,			  GL_BYTE } ,
 	{ GL_DEPTH_STENCIL,	  GL_DEPTH_STENCIL,	  GL_FLOAT_32_UNSIGNED_INT_24_8_REV } ,
 	{ GL_DEPTH_STENCIL,	  GL_DEPTH_STENCIL,   GL_UNSIGNED_INT_24_8 } ,
-	{ GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT }
+	{ GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT },
+	{ GL_RG32F,			  GL_RG,			  GL_FLOAT } ,
 };
 
 const GLenum kShaderTypeTable[] =
@@ -526,13 +527,11 @@ Texture2D* RenderDevice::create_texture_2d(const Texture2DCreateDesc& desc)
 
 	GL_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, texture->id));
 
-	GLenum internalFormat, format, type;
+	texture->internalFormat = kTextureFormatTable[desc.format][0];
+    texture->format = kTextureFormatTable[desc.format][1];
+	texture->type = kTextureFormatTable[desc.format][2];
 
-	internalFormat = kTextureFormatTable[desc.format][0];
-    format = kTextureFormatTable[desc.format][1];
-	type = kTextureFormatTable[desc.format][2];
-
-	GL_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, desc.width, desc.height, 0, format, type, desc.data));
+	GL_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, texture->internalFormat, desc.width, desc.height, 0, texture->format, texture->type, desc.data));
 
 	if (desc.mipmap_levels > 0) // @TODO: Allocate memory for mipmaps?
 	{
@@ -544,7 +543,7 @@ Texture2D* RenderDevice::create_texture_2d(const Texture2DCreateDesc& desc)
 	return texture;
 }
 
-TextureCube* RenderDevice::CreateTextureCube(const TextureCubeCreateDesc& desc)
+TextureCube* RenderDevice::create_texture_cube(const TextureCubeCreateDesc& desc)
 {
 	int mipLevels = 0;
 
@@ -560,11 +559,9 @@ TextureCube* RenderDevice::CreateTextureCube(const TextureCubeCreateDesc& desc)
 
 	GL_CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, texture->id));
 
-	GLenum internalFormat, format, type;
-
-	internalFormat = kTextureFormatTable[desc.format][0];
-	format = kTextureFormatTable[desc.format][1];
-	type = kTextureFormatTable[desc.format][2];
+	texture->internalFormat = kTextureFormatTable[desc.format][0];
+	texture->format = kTextureFormatTable[desc.format][1];
+	texture->type = kTextureFormatTable[desc.format][2];
 
 	for (int mip = 0; mip < mipLevels; mip++)
 	{
@@ -573,12 +570,12 @@ TextureCube* RenderDevice::CreateTextureCube(const TextureCubeCreateDesc& desc)
 		{
 			GL_CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
 				mip,
-				internalFormat,
+				texture->internalFormat,
 				desc.width,
 				desc.height,
 				0,
-				format,
-				type,
+				texture->format,
+				texture->type,
 				(mip == 0) ? desc.initialData[i] : nullptr));
 		}
 	}
@@ -593,7 +590,7 @@ TextureCube* RenderDevice::CreateTextureCube(const TextureCubeCreateDesc& desc)
 	return texture;
 }
 
-void RenderDevice::GenerateMipMaps(Texture* texture)
+void RenderDevice::generate_mipmaps(Texture* texture)
 {
 	if (texture)
 	{
@@ -602,7 +599,7 @@ void RenderDevice::GenerateMipMaps(Texture* texture)
 	}
 }
 
-void RenderDevice::WaitForIdle()
+void RenderDevice::wait_for_idle()
 {
 	glFinish();
 }
@@ -725,7 +722,7 @@ SamplerState* RenderDevice::create_sampler_state(const SamplerStateCreateDesc& d
 	return samplerState;
 }
 
-void RenderDevice::Destroy(Shader* shader)
+void RenderDevice::destroy(Shader* shader)
 {
 	if (shader)
 	{
@@ -734,7 +731,7 @@ void RenderDevice::Destroy(Shader* shader)
 	}
 }
 
-void RenderDevice::Destroy(ShaderProgram* program)
+void RenderDevice::destroy(ShaderProgram* program)
 {
 	if (program)
 	{
@@ -743,7 +740,7 @@ void RenderDevice::Destroy(ShaderProgram* program)
 	}
 }
 
-void RenderDevice::Destroy(VertexBuffer* vertex_buffer)
+void RenderDevice::destroy(VertexBuffer* vertex_buffer)
 {
 	if (vertex_buffer)
 	{
@@ -752,7 +749,7 @@ void RenderDevice::Destroy(VertexBuffer* vertex_buffer)
 	}
 }
 
-void RenderDevice::Destroy(IndexBuffer* index_buffer)
+void RenderDevice::destroy(IndexBuffer* index_buffer)
 {
 	if (index_buffer)
 	{
@@ -761,13 +758,13 @@ void RenderDevice::Destroy(IndexBuffer* index_buffer)
 	}
 }
 
-void RenderDevice::Destroy(UniformBuffer* buffer)
+void RenderDevice::destroy(UniformBuffer* buffer)
 {
 	GL_CHECK_ERROR(glDeleteBuffers(1, &buffer->id));
 	delete buffer;
 }
 
-void RenderDevice::Destroy(VertexArray* vertex_array)
+void RenderDevice::destroy(VertexArray* vertex_array)
 {
 	if (vertex_array)
 	{
@@ -776,7 +773,7 @@ void RenderDevice::Destroy(VertexArray* vertex_array)
 	}
 }
 
-void RenderDevice::Destroy(Texture* texture)
+void RenderDevice::destroy(Texture* texture)
 {
 	if (texture)
 	{
@@ -785,37 +782,62 @@ void RenderDevice::Destroy(Texture* texture)
 	}
 }
 
-void RenderDevice::Destroy(RasterizerState* state)
+void RenderDevice::destroy(RasterizerState* state)
 {
 	delete state;
 }
 
-void RenderDevice::Destroy(SamplerState* state)
+void RenderDevice::destroy(SamplerState* state)
 {
 	GL_CHECK_ERROR(glDeleteSamplers(1, &state->id));
 	delete state;
 }
 
-void RenderDevice::Destroy(DepthStencilState* state)
+void RenderDevice::destroy(DepthStencilState* state)
 {
 	delete state;
 }
 
-void RenderDevice::Destroy(PipelineStateObject* pso)
+void RenderDevice::destroy(PipelineStateObject* pso)
 {
-	Destroy(pso->depth_stencil_state);
-	Destroy(pso->rasterizer_state);
+	destroy(pso->depth_stencil_state);
+	destroy(pso->rasterizer_state);
 
 	delete pso;
 }
 
-void RenderDevice::Destroy(Framebuffer* framebuffer)
+void RenderDevice::destroy(Framebuffer* framebuffer)
 {
 	if (framebuffer)
 	{
 		GL_CHECK_ERROR(glDeleteFramebuffers(1, &framebuffer->id));
 		delete framebuffer;
 	}
+}
+
+void RenderDevice::texture_extents(Texture* texture, const int& mipSlice, int& width, int& height)
+{
+	GLenum target = texture->gl_texture_target;
+
+	if (texture->gl_texture_target == GL_TEXTURE_CUBE_MAP)
+		target = GL_TEXTURE_CUBE_MAP_POSITIVE_X; // If the texture is a cubemap, then query the extents of the +X face since they're all the same size.
+
+	GL_CHECK_ERROR(glActiveTexture(GL_TEXTURE0));
+	GL_CHECK_ERROR(glBindTexture(texture->gl_texture_target, texture->id));
+
+	GL_CHECK_ERROR(glGetTexLevelParameteriv(target, mipSlice, GL_TEXTURE_WIDTH, &width));
+	GL_CHECK_ERROR(glGetTexLevelParameteriv(target, mipSlice, GL_TEXTURE_HEIGHT, &height));
+
+	GL_CHECK_ERROR(glBindTexture(texture->gl_texture_target, 0));
+}
+
+void RenderDevice::texture_data(Texture* texture, const int& mipSlice, const int& arraySlice, void* data)
+{
+	const GLenum target = kTextureTargetTable[arraySlice];
+	GL_CHECK_ERROR(glActiveTexture(GL_TEXTURE0));
+	GL_CHECK_ERROR(glBindTexture(texture->gl_texture_target, texture->id));
+	GL_CHECK_ERROR(glGetTexImage(target, mipSlice, texture->format, texture->type, data));
+	GL_CHECK_ERROR(glBindTexture(texture->gl_texture_target, 0));
 }
 
 void RenderDevice::bind_pipeline_state_object(PipelineStateObject* pso)
@@ -825,7 +847,7 @@ void RenderDevice::bind_pipeline_state_object(PipelineStateObject* pso)
 	set_primitive_type(pso->primitive);
 }
 
-int RenderDevice::UniformBufferAlignment()
+int RenderDevice::uniform_buffer_alignment()
 {
 	GLint uniformBufferAlignSize = 0;
 	glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &uniformBufferAlignSize);

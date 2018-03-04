@@ -1,7 +1,7 @@
 #pragma once
 
-#include "gfx_enums.h"
-#include "gfx_descs.h"
+#include <gfx_enums.h>
+#include <gfx_descs.h>
 
 //#if defined(GFX_BACKEND_GL3)
 //    #include "graphics_types_gl3.hpp"
@@ -21,4 +21,4 @@
 //    #include "graphics_types_mtl.hpp"
 //#endif
 
-#include "gfx_types_gl4.h"
+#include <gl/gl_types.h>
