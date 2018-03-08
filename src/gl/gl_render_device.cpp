@@ -350,32 +350,31 @@ void RenderDevice::attach_render_target(Framebuffer* framebuffer, const RenderTa
 {
 	framebuffer->render_targets[framebuffer->num_render_targets++] = desc.texture;
 
+    GL_CHECK_ERROR(glBindTexture(desc.texture->gl_texture_target, desc.texture->id));
 	GL_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->id));
 
 	// Bind specific layer of a layered texture
-	if ((desc.texture->gl_texture_target == GL_TEXTURE_CUBE_MAP && desc.arraySlice > TextureType::TEXTURECUBE) ||
-		desc.texture->gl_texture_target == GL_TEXTURE_1D_ARRAY || 
-		desc.texture->gl_texture_target == GL_TEXTURE_2D_ARRAY || 
-		desc.texture->gl_texture_target == GL_TEXTURE_CUBE_MAP_ARRAY)
-	{
-		int layer = 0;
+    if (desc.texture->gl_texture_target == GL_TEXTURE_1D_ARRAY        ||
+        desc.texture->gl_texture_target == GL_TEXTURE_2D_ARRAY        ||
+        desc.texture->gl_texture_target == GL_TEXTURE_CUBE_MAP_ARRAY)
+    {
+        int layer = desc.arraySlice;
 
-		if (desc.texture->gl_texture_target == GL_TEXTURE_CUBE_MAP)
-			layer = desc.arraySlice - TextureType::TEXTURECUBE - 1;
-		else
-			layer = desc.arraySlice;
-
-		GL_CHECK_ERROR(glFramebufferTextureLayer(GL_FRAMEBUFFER,
-			GL_COLOR_ATTACHMENT0 + (framebuffer->num_render_targets - 1),
-			desc.texture->id,
-			desc.mipSlice,
-			layer));
-	}
-	else
-	{
+        GL_CHECK_ERROR(glFramebufferTextureLayer(GL_FRAMEBUFFER,
+            GL_COLOR_ATTACHMENT0 + (framebuffer->num_render_targets - 1),
+            desc.texture->id,
+            desc.mipSlice,
+            layer));
+    }
+    else if (desc.texture->gl_texture_target == GL_TEXTURE_CUBE_MAP && desc.arraySlice > TextureType::TEXTURECUBE)
+    {
+        GL_CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (framebuffer->num_render_targets - 1), kTextureTargetTable[desc.arraySlice], desc.texture->id, desc.mipSlice));
+    }
+    else
+    {
 		// Bind regular texture or entire layered texture
-		GL_CHECK_ERROR(glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (framebuffer->num_render_targets - 1), desc.texture->id, desc.mipSlice));
-	}
+		GL_CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + (framebuffer->num_render_targets - 1), desc.texture->gl_texture_target, desc.texture->id, desc.mipSlice));
+    }
 
 	GLuint drawBuffers[MAX_RENDER_TARGETS];
 
@@ -384,10 +383,48 @@ void RenderDevice::attach_render_target(Framebuffer* framebuffer, const RenderTa
 
 	GL_CHECK_ERROR(glDrawBuffers(framebuffer->num_render_targets, &drawBuffers[0]));
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "Framebuffer not complete!" << std::endl;
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    
+    if (status != GL_FRAMEBUFFER_COMPLETE)
+    {
+        std::string error = "Framebuffer Incomplete: ";
+        
+        switch (status)
+        {
+            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+            {
+                error += "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
+                break;
+            }
+            case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+            {
+                error += "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS";
+                break;
+            }
+            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+            {
+                error += "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER";
+                break;
+            }
+            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+            {
+                error += "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
+                break;
+            }
+            case GL_FRAMEBUFFER_UNSUPPORTED:
+            {
+                error += "GL_FRAMEBUFFER_UNSUPPORTED";
+                break;
+            }
+            default:
+                break;
+        }
+        
+        LOG_ERROR(error);
+    }
     
 	GL_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+    GL_CHECK_ERROR(glBindTexture(desc.texture->gl_texture_target, 0));
 }
 
 void RenderDevice::attach_depth_stencil_target(Framebuffer* framebuffer, const DepthStencilTargetDesc& desc)
@@ -418,7 +455,6 @@ Framebuffer* RenderDevice::create_framebuffer(const FramebufferCreateDesc& desc)
 
 	return framebuffer;
 }
-
 
 VertexBuffer* RenderDevice::create_vertex_buffer(const BufferCreateDesc& desc)
 {
@@ -596,6 +632,7 @@ void RenderDevice::generate_mipmaps(Texture* texture)
 	{
 		glBindTexture(GL_TEXTURE_CUBE_MAP, texture->id);
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	}
 }
 
