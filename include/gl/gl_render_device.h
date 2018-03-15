@@ -64,10 +64,13 @@ public:
 	void  clear_framebuffer(uint32_t clear_target, float* clear_color);
 	void  set_viewport(uint32_t width, uint32_t height, uint32_t top_left_x, uint32_t top_left_y);
 
+	void dispatch_compute(uint32_t x, uint32_t y, uint32_t z);
 	void draw(uint32_t first_index, uint32_t count);
 	void draw_indexed(uint32_t index_count);
 	void draw_indexed_base_vertex(uint32_t index_count, uint32_t base_index, uint32_t base_vertex);
     
 private:
+	int m_max_work_group_count[3];
+	int m_max_work_group_size[3];
     DeviceData m_device_data;
 };

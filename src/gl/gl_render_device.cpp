@@ -175,7 +175,8 @@ const GLenum kDrawPrimitiveTypeTable[] =
 	GL_TRIANGLES,
 	GL_TRIANGLE_STRIP,
 	GL_LINES,
-	GL_LINE_STRIP
+	GL_LINE_STRIP,
+	GL_PATCHES
 };
 
 const GLenum kTextureTargetTable[] = 
@@ -213,6 +214,15 @@ bool RenderDevice::init()
 	{
         glEnable(GL_MULTISAMPLE);
 		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+		glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &m_max_work_group_count[0]);
+		glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &m_max_work_group_count[1]);
+		glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &m_max_work_group_count[2]);
+
+		glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &m_max_work_group_size[0]);
+		glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &m_max_work_group_size[1]);
+		glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &m_max_work_group_size[2]);
+
 		return true;
 	}
 }
@@ -265,6 +275,7 @@ ShaderProgram* RenderDevice::create_shader_program(Shader** shaders, uint32_t co
 	{
 		if (count > 1 && shaders[i]->type == ShaderType::COMPUTE)
         {
+			LOG_ERROR("Compute shader programs cannot have more than one shader!");
             delete shaderProgram;
             return nullptr;
         }
@@ -1035,6 +1046,11 @@ void RenderDevice::clear_framebuffer(uint32_t clear_target, float* clear_color)
 void RenderDevice::set_viewport(uint32_t width, uint32_t height, uint32_t top_left_x, uint32_t top_left_y)
 {
 	GL_CHECK_ERROR(glViewport(top_left_x, top_left_y, width, height));
+}
+
+void RenderDevice::dispatch_compute(uint32_t x, uint32_t y, uint32_t z)
+{
+	GL_CHECK_ERROR(glDispatchCompute(x, y, z));
 }
 
 void RenderDevice::draw(uint32_t first_index, uint32_t count)

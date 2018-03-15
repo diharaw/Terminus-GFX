@@ -30,7 +30,8 @@ namespace PrimitiveType
         TRIANGLES      = 1,
         TRIANGLE_STRIP = 2,
         LINES          = 3,
-        LINE_STRIP     = 4
+        LINE_STRIP     = 4,
+		PATCHES		   = 5
     };
 };
 
