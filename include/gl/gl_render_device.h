@@ -47,6 +47,7 @@ public:
 
 	void  texture_extents(Texture* texture, const int& mipSlice, int& width, int& height);
 	void  texture_data(Texture* texture, const int& mipSlice, const int& arraySlice, void* data);
+	void  set_texture_data(Texture* texture, const int& mipSlice, const int& arraySlice, uint16_t& width, uint16_t& height, void* data);
 	void  bind_pipeline_state_object(PipelineStateObject* pso);
 	void  bind_texture(Texture* texture, uint32_t shader_stage, uint32_t slot);
 	void  bind_rasterizer_state(RasterizerState* state);

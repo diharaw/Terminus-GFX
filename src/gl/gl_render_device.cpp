@@ -42,13 +42,13 @@ const GLenum kTextureFormatTable[][3] =
 	{ GL_RGBA32UI,								GL_RGBA,			GL_UNSIGNED_INT } ,
 	{ GL_RGB32I,								GL_RGB,				GL_INT } ,
 	{ GL_RGBA32I,								GL_RGBA,			GL_INT } ,
-	{ GL_RG16F,									GL_RG,				GL_FLOAT } ,
-	{ GL_RGB16F,								GL_RGB,				GL_FLOAT } ,
-    { GL_RGBA16F,								GL_RGBA,			GL_FLOAT } ,
-    { GL_RGB16UI,								GL_RGB,				GL_UNSIGNED_INT } ,
-	{ GL_RGBA16UI,								GL_RGBA,			GL_UNSIGNED_INT } ,
-    { GL_RGB16I,								GL_RGB,				GL_INT } ,
-	{ GL_RGBA16I,								GL_RGBA,			GL_INT } ,
+	{ GL_RG16F,									GL_RG,				GL_HALF_FLOAT } ,
+	{ GL_RGB16F,								GL_RGB,				GL_HALF_FLOAT } ,
+    { GL_RGBA16F,								GL_RGBA,			GL_HALF_FLOAT } ,
+    { GL_RGB16UI,								GL_RGB,				GL_UNSIGNED_SHORT } ,
+	{ GL_RGBA16UI,								GL_RGBA,			GL_UNSIGNED_SHORT } ,
+    { GL_RGB16I,								GL_RGB,				GL_SHORT } ,
+	{ GL_RGBA16I,								GL_RGBA,			GL_SHORT } ,
     { GL_RGB8,									GL_RGB,				GL_UNSIGNED_BYTE } ,
 	{ GL_RGBA8,									GL_RGBA,			GL_UNSIGNED_BYTE } ,
     { GL_SRGB8,									GL_RGB,				GL_UNSIGNED_BYTE } ,
@@ -624,7 +624,7 @@ TextureCube* RenderDevice::create_texture_cube(const TextureCubeCreateDesc& desc
 
 	for (int mip = 0; mip < mipLevels; mip++)
 	{
-		// Array order [+X, –X, +Y, –Y, +Z, –Z]
+		// Array order [+X, ï¿½X, +Y, ï¿½Y, +Z, ï¿½Z]
 		for (int i = 0; i < 6; i++)
 		{
 			GL_CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -647,6 +647,23 @@ TextureCube* RenderDevice::create_texture_cube(const TextureCubeCreateDesc& desc
 	GL_CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
 
 	return texture;
+}
+
+void RenderDevice::set_texture_data(Texture* texture, const int& mipSlice, const int& arraySlice, uint16_t& width, uint16_t& height, void* data)
+{
+	GL_CHECK_ERROR(glBindTexture(texture->gl_texture_target, texture->id));
+
+	GL_CHECK_ERROR(glTexImage2D(kTextureTargetTable[arraySlice],
+								mipSlice,
+								texture->internalFormat,
+								width,
+								height,
+								0,
+								texture->format,
+								texture->type,
+								data));
+
+	GL_CHECK_ERROR(glBindTexture(texture->gl_texture_target, 0));
 }
 
 void RenderDevice::generate_mipmaps(Texture* texture)
