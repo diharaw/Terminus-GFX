@@ -35,49 +35,38 @@ err = glGetError();																				  \
 
 const GLenum kTextureFormatTable[][3] =
 {
-	// Internal Format							// Format			// Type
-	{ GL_RGB32F,								GL_RGB,				GL_FLOAT } ,
-	{ GL_RGBA32F,								GL_RGBA,			GL_FLOAT } ,
-	{ GL_RGB32UI,								GL_RGB,				GL_UNSIGNED_INT } ,
-	{ GL_RGBA32UI,								GL_RGBA,			GL_UNSIGNED_INT } ,
-	{ GL_RGB32I,								GL_RGB,				GL_INT } ,
-	{ GL_RGBA32I,								GL_RGBA,			GL_INT } ,
-	{ GL_RG16F,									GL_RG,				GL_HALF_FLOAT } ,
-	{ GL_RGB16F,								GL_RGB,				GL_HALF_FLOAT } ,
-    { GL_RGBA16F,								GL_RGBA,			GL_HALF_FLOAT } ,
-    { GL_RGB16UI,								GL_RGB,				GL_UNSIGNED_SHORT } ,
-	{ GL_RGBA16UI,								GL_RGBA,			GL_UNSIGNED_SHORT } ,
-    { GL_RGB16I,								GL_RGB,				GL_SHORT } ,
-	{ GL_RGBA16I,								GL_RGBA,			GL_SHORT } ,
-    { GL_RGB8,									GL_RGB,				GL_UNSIGNED_BYTE } ,
-	{ GL_RGBA8,									GL_RGBA,			GL_UNSIGNED_BYTE } ,
-    { GL_SRGB8,									GL_RGB,				GL_UNSIGNED_BYTE } ,
-    { GL_SRGB8_ALPHA8,							GL_RGBA,			GL_UNSIGNED_BYTE } ,
-    { GL_RGB8_SNORM,							GL_RGB,				GL_BYTE } ,
-    { GL_RGBA8_SNORM,							GL_RGBA,			GL_BYTE } ,
-    { GL_RGB8I,									GL_RGB,				GL_INT } ,
-    { GL_RGBA8I,								GL_RGBA,			GL_INT } ,
-    { GL_RGB8I,									GL_RGB,				GL_UNSIGNED_INT } ,
-	{ GL_RGBA8UI,								GL_RGBA,			GL_UNSIGNED_INT } ,
-	{ GL_R8,									GL_RED,				GL_UNSIGNED_BYTE } ,
-	{ GL_R8_SNORM,								GL_RED,				GL_BYTE } ,
-	{ GL_DEPTH_STENCIL,							GL_DEPTH_STENCIL,	GL_FLOAT_32_UNSIGNED_INT_24_8_REV } ,
-	{ GL_DEPTH_STENCIL,							GL_DEPTH_STENCIL,   GL_UNSIGNED_INT_24_8 } ,
-	{ GL_DEPTH_COMPONENT,						GL_DEPTH_COMPONENT, GL_FLOAT },
-	{ GL_RG32F,									GL_RG,			    GL_FLOAT } ,
-	{ GL_COMPRESSED_RGB_S3TC_DXT1_EXT,			GL_RGB,			    GL_UNSIGNED_BYTE } ,
-	{ GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,			GL_RGBA,		    GL_UNSIGNED_BYTE } ,
-	{ GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,			GL_RGBA,		    GL_UNSIGNED_BYTE } ,
-	{ GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,			GL_RGBA,		    GL_UNSIGNED_BYTE } ,
-	{ GL_COMPRESSED_RED_RGTC1,					GL_RED,			    GL_UNSIGNED_BYTE } ,
-	{ GL_COMPRESSED_RG_RGTC2,					GL_RG,			    GL_UNSIGNED_BYTE } ,
-	{ GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,	GL_RGB,			    GL_FLOAT } ,
+	// Internal Format    // Format			  // Type
+	{ GL_RGB32F,		  GL_RGB,			  GL_FLOAT } ,
+	{ GL_RGBA32F,		  GL_RGBA,			  GL_FLOAT } ,
+	{ GL_RGB32UI,		  GL_RGB,			  GL_UNSIGNED_INT } ,
+	{ GL_RGBA32UI,		  GL_RGBA,			  GL_UNSIGNED_INT } ,
+	{ GL_RGB32I,		  GL_RGB,			  GL_INT } ,
+	{ GL_RGBA32I,		  GL_RGBA,			  GL_INT } ,
+	{ GL_RG16F,			  GL_RG,			  GL_HALF_FLOAT } ,
+	{ GL_RGB16F,		  GL_RGB,			  GL_HALF_FLOAT } ,
+    { GL_RGBA16F,		  GL_RGBA,			  GL_HALF_FLOAT } ,
+    { GL_RGB16UI,		  GL_RGB,			  GL_UNSIGNED_SHORT } ,
+	{ GL_RGBA16UI,		  GL_RGBA,			  GL_UNSIGNED_SHORT } ,
+    { GL_RGB16I,		  GL_RGB,			  GL_SHORT } ,
+	{ GL_RGBA16I,		  GL_RGBA,			  GL_SHORT } ,
+    { GL_RGB8,			  GL_RGB,			  GL_UNSIGNED_BYTE } ,
+	{ GL_RGBA8,			  GL_RGBA,			  GL_UNSIGNED_BYTE } ,
+    { GL_SRGB8,			  GL_RGB,			  GL_UNSIGNED_BYTE } ,
+    { GL_SRGB8_ALPHA8,	  GL_RGBA,			  GL_UNSIGNED_BYTE } ,
+    { GL_RGB8_SNORM,	  GL_RGB,			  GL_BYTE } ,
+    { GL_RGBA8_SNORM,	  GL_RGBA,			  GL_BYTE } ,
+    { GL_RGB8I,			  GL_RGB,			  GL_INT } ,
+    { GL_RGBA8I,		  GL_RGBA,			  GL_INT } ,
+    { GL_RGB8I,			  GL_RGB,			  GL_UNSIGNED_INT } ,
+	{ GL_RGBA8UI,		  GL_RGBA,			  GL_UNSIGNED_INT } ,
+	{ GL_R8,			  GL_RED,			  GL_UNSIGNED_BYTE } ,
+	{ GL_R8_SNORM,		  GL_RED,			  GL_BYTE } ,
+	{ GL_DEPTH_STENCIL,	  GL_DEPTH_STENCIL,	  GL_FLOAT_32_UNSIGNED_INT_24_8_REV } ,
+	{ GL_DEPTH_STENCIL,	  GL_DEPTH_STENCIL,   GL_UNSIGNED_INT_24_8 } ,
+	{ GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT },
+	{ GL_RG32F,			  GL_RG,			  GL_FLOAT },
+	{ GL_R16F,			  GL_RED,			  GL_UNSIGNED_SHORT }
 };
-
-/*COMPRESSED_SRGB_S3TC_DXT1_EXT                 
-COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT           
-COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT           
-COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT    */       
 
 const GLenum kShaderTypeTable[] =
 {
@@ -454,12 +443,66 @@ void RenderDevice::attach_depth_stencil_target(Framebuffer* framebuffer, const D
 {
 	framebuffer->depth_target = desc.texture;
 	GL_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->id));
-	GL_CHECK_ERROR(glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, desc.texture->id, desc.mipSlice));
+
+	if (desc.texture->gl_texture_target == GL_TEXTURE_1D_ARRAY ||
+		desc.texture->gl_texture_target == GL_TEXTURE_2D_ARRAY ||
+		desc.texture->gl_texture_target == GL_TEXTURE_CUBE_MAP_ARRAY)
+	{
+		int layer = desc.arraySlice;
+
+		GL_CHECK_ERROR(glFramebufferTextureLayer(GL_FRAMEBUFFER,
+			GL_DEPTH_ATTACHMENT,
+			desc.texture->id,
+			desc.mipSlice,
+			layer));
+	}
+	else
+	{
+		GL_CHECK_ERROR(glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, desc.texture->id, desc.mipSlice));
+	}
     
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "Framebuffer not complete!" << std::endl;
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::string error = "Framebuffer Incomplete: ";
+
+		switch (status)
+		{
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+		{
+			error += "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
+			break;
+		}
+		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+		{
+			error += "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS";
+			break;
+		}
+		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+		{
+			error += "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER";
+			break;
+		}
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+		{
+			error += "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
+			break;
+		}
+		case GL_FRAMEBUFFER_UNSUPPORTED:
+		{
+			error += "GL_FRAMEBUFFER_UNSUPPORTED";
+			break;
+		}
+		default:
+			break;
+		}
+
+		LOG_ERROR(error);
+	}
     
 	GL_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	GL_CHECK_ERROR(glBindTexture(desc.texture->gl_texture_target, 0));
 }
 
 Framebuffer* RenderDevice::create_framebuffer(const FramebufferCreateDesc& desc)
@@ -592,12 +635,37 @@ Texture2D* RenderDevice::create_texture_2d(const Texture2DCreateDesc& desc)
 
 	GL_CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, texture->internalFormat, desc.width, desc.height, 0, texture->format, texture->type, desc.data));
 
-	if (desc.mipmap_levels > 0) // @TODO: Allocate memory for mipmaps?
+	if (desc.mipmap_levels > 1) // @TODO: Allocate memory for mipmaps?
 	{
 		GL_CHECK_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
 	}
 
 	GL_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+
+	return texture;
+}
+
+Texture2D* RenderDevice::create_texture_2d_array(const Texture2DArrayCreateDesc& desc)
+{
+	Texture2D* texture = new Texture2D();
+
+	GL_CHECK_ERROR(glGenTextures(1, &texture->id));
+	texture->gl_texture_target = GL_TEXTURE_2D_ARRAY;
+
+	GL_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D_ARRAY, texture->id));
+
+	texture->internalFormat = kTextureFormatTable[desc.format][0];
+	texture->format = kTextureFormatTable[desc.format][1];
+	texture->type = kTextureFormatTable[desc.format][2];
+
+	glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, texture->internalFormat, desc.width, desc.height, desc.array_slices, 0, texture->format, texture->type, nullptr);
+
+	if (desc.mipmap_levels > 1) // @TODO: Allocate memory for mipmaps?
+	{
+		GL_CHECK_ERROR(glGenerateMipmap(GL_TEXTURE_2D_ARRAY));
+	}
+
+	GL_CHECK_ERROR(glBindTexture(GL_TEXTURE_2D_ARRAY, 0));
 
 	return texture;
 }
@@ -622,21 +690,18 @@ TextureCube* RenderDevice::create_texture_cube(const TextureCubeCreateDesc& desc
 	texture->format = kTextureFormatTable[desc.format][1];
 	texture->type = kTextureFormatTable[desc.format][2];
 
-	for (int mip = 0; mip < mipLevels; mip++)
+	// Array order [+X, –X, +Y, –Y, +Z, –Z]
+	for (int i = 0; i < 6; i++)
 	{
-		// Array order [+X, ï¿½X, +Y, ï¿½Y, +Z, ï¿½Z]
-		for (int i = 0; i < 6; i++)
-		{
-			GL_CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-				mip,
-				texture->internalFormat,
-				desc.width,
-				desc.height,
-				0,
-				texture->format,
-				texture->type,
-				(mip == 0) ? desc.initialData[i] : nullptr));
-		}
+		GL_CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+			0,
+			texture->internalFormat,
+			desc.width,
+			desc.height,
+			0,
+			texture->format,
+			texture->type,
+			desc.initialData[i]));
 	}
 
 	if (desc.mipmapLevels > 0)

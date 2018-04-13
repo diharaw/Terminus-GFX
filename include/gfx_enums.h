@@ -160,44 +160,36 @@ namespace TextureFormat
     enum
     {
 		// @TODO: Add compressed formats
-        R32G32B32_FLOAT		   = 0,
-        R32G32B32A32_FLOAT	   = 1,
-        R32G32B32_UINT		   = 2,
-        R32G32B32A32_UINT	   = 3,
-        R32G32B32_INT		   = 4,
-        R32G32B32A32_INT	   = 5,
-		R16G16_FLOAT		   = 6,
-        R16G16B16_FLOAT		   = 7,
-        R16G16B16A16_FLOAT	   = 8,
-        R16G16B16_UINT		   = 9,
-        R16G16B16A16_UINT	   = 10,
-        R16G16B16_INT		   = 11,
-        R16G16B16A16_INT	   = 12,
-        R8G8B8_UNORM		   = 13,
-        R8G8B8A8_UNORM		   = 14,
-        R8G8B8_UNORM_SRGB	   = 15,
-        R8G8B8A8_UNORM_SRGB	   = 16,
-        R8G8B8_SNORM		   = 17,
-        R8G8B8A8_SNORM		   = 18,
-        R8G8B8_INT			   = 19,
-        R8G8B8A8_INT		   = 20,
-        R8G8B8_UINT			   = 21,
-        R8G8B8A8_UINT		   = 22,
-		R8_UNORM			   = 23,
-		R8_SNORM			   = 24,
-        D32_FLOAT_S8_UINT	   = 25,
-        D24_FLOAT_S8_UINT	   = 26,
-        D16_FLOAT			   = 27,
-		R32G32_FLOAT		   = 28,
-		COMPRESSED_BC1_RGB8	   = 29, // DXT1
-		COMPRESSED_BC1_RGBA8   = 30, // DXT1a
-		COMPRESSED_BC2_RGBA16  = 31, // DXT3
-		COMPRESSED_BC3_RGBA16  = 32, // DXT5
-		COMPRESSED_BC4_R8	   = 33, // OpenGL: RGTC1_RED
-		COMPRESSED_BC5_RG16	   = 34, // OpenGL: RGTC2_RG
-		COMPRESSED_BC6_RGB16   = 35,  // OpenGL: BPTC_UNSIGNED_FLOAT
-		COMPRESSED_BC7_RGBA8   = 36, // GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM
-		COMPRESSED_BC7_SRGBA8  = 37 // GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM
+        R32G32B32_FLOAT    = 0,
+        R32G32B32A32_FLOAT = 1,
+        R32G32B32_UINT     = 2,
+        R32G32B32A32_UINT  = 3,
+        R32G32B32_INT      = 4,
+        R32G32B32A32_INT   = 5,
+		R16G16_FLOAT	   = 6,
+        R16G16B16_FLOAT    = 7,
+        R16G16B16A16_FLOAT = 8,
+        R16G16B16_UINT     = 9,
+        R16G16B16A16_UINT  = 10,
+        R16G16B16_INT      = 11,
+        R16G16B16A16_INT   = 12,
+        R8G8B8_UNORM       = 13,
+        R8G8B8A8_UNORM     = 14,
+        R8G8B8_UNORM_SRGB  = 15,
+        R8G8B8A8_UNORM_SRGB= 16,
+        R8G8B8_SNORM       = 17,
+        R8G8B8A8_SNORM     = 18,
+        R8G8B8_INT         = 19,
+        R8G8B8A8_INT       = 20,
+        R8G8B8_UINT        = 21,
+        R8G8B8A8_UINT      = 22,
+		R8_UNORM		   = 23,
+		R8_SNORM		   = 24,
+        D32_FLOAT_S8_UINT  = 25,
+        D24_FLOAT_S8_UINT  = 26,
+        D16_FLOAT          = 27,
+		R32G32_FLOAT	   = 28,
+		R16_FLOAT		   = 29
     };
 };
 

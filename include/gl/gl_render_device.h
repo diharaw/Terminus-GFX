@@ -22,6 +22,7 @@ public:
 	IndexBuffer* create_index_buffer(const BufferCreateDesc& desc);
 	VertexArray* create_vertex_array(const VertexArrayCreateDesc& desc);
 	Texture2D* create_texture_2d(const Texture2DCreateDesc& desc);
+	Texture2D* create_texture_2d_array(const Texture2DArrayCreateDesc& desc);
 	TextureCube* create_texture_cube(const TextureCubeCreateDesc& desc);
 	void generate_mipmaps(Texture* texture);
 	void wait_for_idle();
