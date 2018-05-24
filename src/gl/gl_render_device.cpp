@@ -193,6 +193,38 @@ const GLenum kTextureTargetTable[] =
 	GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
 	GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 };
+
+const GLenum kBlendFuncTable[] = 
+{
+	GL_ZERO,
+	GL_ONE,
+	GL_SRC_COLOR,
+	GL_ONE_MINUS_SRC_COLOR,
+	GL_DST_COLOR,
+	GL_ONE_MINUS_DST_COLOR,
+	GL_SRC_ALPHA,
+	GL_ONE_MINUS_SRC_ALPHA,
+	GL_DST_ALPHA,
+	GL_ONE_MINUS_DST_ALPHA,
+	GL_CONSTANT_COLOR,
+	GL_ONE_MINUS_CONSTANT_COLOR,
+	GL_CONSTANT_ALPHA,
+	GL_ONE_MINUS_CONSTANT_ALPHA,
+	GL_SRC_ALPHA_SATURATE,
+	GL_SRC1_COLOR,
+	GL_ONE_MINUS_SRC1_COLOR,
+	GL_SRC1_ALPHA,
+	GL_ONE_MINUS_SRC1_ALPHA
+};
+
+const GLenum kBlendEquationTable[] =
+{
+	GL_FUNC_ADD,
+	GL_FUNC_SUBTRACT,
+	GL_FUNC_REVERSE_SUBTRACT,
+	GL_MIN,
+	GL_MAX
+};
  
 RenderDevice::RenderDevice()
 {
@@ -792,6 +824,21 @@ DepthStencilState* RenderDevice::create_depth_stencil_state(const DepthStencilSt
 	return depthStencilState;
 }
 
+BlendState* RenderDevice::create_blend_state(const BlendStateCreateDesc& desc)
+{
+	BlendState* state = new BlendState();
+
+	state->enable = desc.enable;
+	state->src_func = desc.src_func;
+	state->dst_func = desc.dst_func;
+	state->blend_op = desc.blend_op;
+	state->src_func_alpha = desc.src_func_alpha;
+	state->dst_func_alpha = desc.dst_func_alpha;
+	state->blend_op_alpha = desc.blend_op_alpha;
+
+	return state;
+}
+
 PipelineStateObject* RenderDevice::create_pipeline_state_object(const PipelineStateObjectCreateDesc& desc)
 {
 	PipelineStateObject* pso = new PipelineStateObject();
@@ -929,6 +976,11 @@ void RenderDevice::destroy(RasterizerState* state)
 	delete state;
 }
 
+void RenderDevice::destroy(BlendState* state)
+{
+	delete state;
+}
+
 void RenderDevice::destroy(SamplerState* state)
 {
 	GL_CHECK_ERROR(glDeleteSamplers(1, &state->id));
@@ -1059,6 +1111,17 @@ void RenderDevice::bind_sampler_state(SamplerState* state, uint32_t shader_stage
 		GL_CHECK_ERROR(glBindSampler(slot, state->id));
 		GL_CHECK_ERROR(glUniform1i(m_device_data.current_program->shader_map[shader_stage]->sampler_bindings[slot], slot));
 	}
+}
+
+void RenderDevice::bind_blend_state(BlendState* state)
+{
+	if (state->enable)
+		glEnable(GL_BLEND);
+	else
+		glDisable(GL_BLEND);
+
+	glBlendEquationSeparate(kBlendEquationTable[state->blend_op], kBlendEquationTable[state->blend_op_alpha]);
+	glBlendFuncSeparate(kBlendFuncTable[state->src_func], kBlendFuncTable[state->dst_func], kBlendFuncTable[state->src_func_alpha], kBlendFuncTable[state->dst_func_alpha]);
 }
 
 void RenderDevice::bind_framebuffer(Framebuffer* framebuffer)

@@ -159,7 +159,13 @@ struct ShaderProgramCreateDesc
 
 struct BlendStateCreateDesc
 {
-    
+	bool enable;
+	uint32_t src_func;
+	uint32_t dst_func;
+	uint32_t blend_op;
+	uint32_t src_func_alpha;
+	uint32_t dst_func_alpha;
+	uint32_t blend_op_alpha;
 };
 
 struct PipelineStateObjectCreateDesc

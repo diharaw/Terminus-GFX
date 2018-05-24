@@ -31,6 +31,7 @@ public:
 	RasterizerState* create_rasterizer_state(const RasterizerStateCreateDesc& desc);
 	SamplerState* create_sampler_state(const SamplerStateCreateDesc& desc);
 	DepthStencilState* create_depth_stencil_state(const DepthStencilStateCreateDesc& desc);
+	BlendState* create_blend_state(const BlendStateCreateDesc& desc);
 	int uniform_buffer_alignment();
 
 	void destroy(Shader* shader);
@@ -43,6 +44,7 @@ public:
 	void destroy(Framebuffer* framebuffer);
 	void destroy(RasterizerState* state);
 	void destroy(SamplerState* state);
+	void destroy(BlendState* state);
 	void destroy(DepthStencilState* state);
     void destroy(PipelineStateObject* pso);
 
@@ -52,6 +54,7 @@ public:
 	void  bind_pipeline_state_object(PipelineStateObject* pso);
 	void  bind_texture(Texture* texture, uint32_t shader_stage, uint32_t slot);
 	void  bind_rasterizer_state(RasterizerState* state);
+	void  bind_blend_state(BlendState* state);
 	void  bind_sampler_state(SamplerState* state, uint32_t shader_stage, uint32_t slot);
 	void  bind_vertex_array(VertexArray* vertex_array);
 	void  bind_uniform_buffer(UniformBuffer* uniform_buffer, uint32_t shader_stage, uint32_t buffer_slot);
