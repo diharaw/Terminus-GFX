@@ -1,5 +1,12 @@
 #include <gl/gl_render_device.h>
-#include <gl/gl_core_4_5.h>
+
+#ifdef __EMSCRIPTEN__
+	#include <GLES3/gl3.h>
+	#include <GLES2/gl2ext.h>
+#else
+	#include <gl/gl_core_4_5.h>
+#endif
+
 #include "utility.h"
 #include "logger.h"
 
@@ -72,10 +79,17 @@ const GLenum kShaderTypeTable[] =
 {
 	GL_VERTEX_SHADER,
 	GL_FRAGMENT_SHADER,
+#ifndef __EMSCRIPTEN__
 	GL_GEOMETRY_SHADER,
 	GL_TESS_CONTROL_SHADER,
 	GL_TESS_EVALUATION_SHADER,
 	GL_COMPUTE_SHADER
+#else
+	0,
+	0,
+	0,
+	0
+#endif
 };
 
 const GLenum kBufferUsageTable[] =
@@ -87,9 +101,15 @@ const GLenum kBufferUsageTable[] =
 
 const GLenum kMapUsageTable[] =
 {
+#ifndef __EMSCRIPTEN__
 	GL_READ_ONLY,
 	GL_WRITE_ONLY,
 	GL_READ_WRITE
+#else
+	0,
+	0,
+	0
+#endif
 };
 
 const GLenum kBufferDataTypeTable[] =
@@ -112,8 +132,13 @@ const GLenum kCullModeTable[] =
 
 const GLenum kFillModeTable[] =
 {
+#ifndef __EMSCRIPTEN__
 	GL_FILL,
 	GL_LINE
+#else
+	0,
+	0
+#endif
 };
 
 const GLenum kComparisonFunctionTable[] =
@@ -145,7 +170,11 @@ const GLenum kTextureWrapModeTable[] =
 	GL_REPEAT,
 	GL_MIRRORED_REPEAT,
 	GL_CLAMP_TO_EDGE,
+#ifndef __EMSCRIPTEN__
 	GL_CLAMP_TO_BORDER
+#else
+	0
+#endif
 };
 
 const GLenum kTextureMagFilteringModeTable[] =
@@ -182,7 +211,11 @@ const GLenum kDrawPrimitiveTypeTable[] =
 
 const GLenum kTextureTargetTable[] = 
 {
+#ifndef __EMSCRIPTEN__
 	GL_TEXTURE_1D,
+#else
+	0,
+#endif
 	GL_TEXTURE_2D,
 	GL_TEXTURE_3D,
 	GL_TEXTURE_CUBE_MAP,
@@ -211,10 +244,17 @@ const GLenum kBlendFuncTable[] =
 	GL_CONSTANT_ALPHA,
 	GL_ONE_MINUS_CONSTANT_ALPHA,
 	GL_SRC_ALPHA_SATURATE,
+#ifndef __EMSCRIPTEN__
 	GL_SRC1_COLOR,
 	GL_ONE_MINUS_SRC1_COLOR,
 	GL_SRC1_ALPHA,
 	GL_ONE_MINUS_SRC1_ALPHA
+#else
+	0,
+	0,
+	0,
+	0
+#endif
 };
 
 const GLenum kBlendEquationTable[] =
@@ -238,6 +278,7 @@ RenderDevice::~RenderDevice()
 
 bool RenderDevice::init()
 {
+#ifndef __EMSCRIPTEN__
 	if (ogl_LoadFunctions() == ogl_LOAD_FAILED)
 	{
 		std::cout << "Failed to load functions" << std::endl;
@@ -245,6 +286,7 @@ bool RenderDevice::init()
 	}
 	else
 	{
+
         glEnable(GL_MULTISAMPLE);
 		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
@@ -258,6 +300,9 @@ bool RenderDevice::init()
 
 		return true;
 	}
+#else
+	return true;
+#endif
 }
 
 Shader* RenderDevice::create_shader(const char* source, uint32_t type)
@@ -272,6 +317,8 @@ Shader* RenderDevice::create_shader(const char* source, uint32_t type)
 
 #if defined(__APPLE__)
     shader->source = "#version 410 core\n" + std::string(source);
+#elif defined(__EMSCRIPTEN__)
+    shader->source = "#version 300 es\n" + std::string(source);
 #else
     shader->source = "#version 430 core\n" + std::string(source);
 #endif
@@ -286,7 +333,7 @@ Shader* RenderDevice::create_shader(const char* source, uint32_t type)
 	{
 		glGetShaderInfoLog(shader->id, 512, NULL, infoLog);
 
-		std::string log_error = "Shader compilation failed";
+        std::string log_error = "Shader compilation failed: ";
 		log_error += std::string(infoLog);
 
 		std::cout << log_error << std::endl;
@@ -398,9 +445,13 @@ void RenderDevice::attach_render_target(Framebuffer* framebuffer, const RenderTa
 	GL_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->id));
 
 	// Bind specific layer of a layered texture
+#ifndef __EMSCRIPTEN__
     if (desc.texture->gl_texture_target == GL_TEXTURE_1D_ARRAY        ||
         desc.texture->gl_texture_target == GL_TEXTURE_2D_ARRAY        ||
         desc.texture->gl_texture_target == GL_TEXTURE_CUBE_MAP_ARRAY)
+#else
+	if (desc.texture->gl_texture_target == GL_TEXTURE_2D_ARRAY)
+#endif
     {
         int layer = desc.arraySlice;
 
@@ -440,6 +491,7 @@ void RenderDevice::attach_render_target(Framebuffer* framebuffer, const RenderTa
                 error += "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
                 break;
             }
+#ifndef __EMSCRIPTEN__
             case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
             {
                 error += "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS";
@@ -450,6 +502,7 @@ void RenderDevice::attach_render_target(Framebuffer* framebuffer, const RenderTa
                 error += "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER";
                 break;
             }
+#endif
             case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
             {
                 error += "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
@@ -476,9 +529,13 @@ void RenderDevice::attach_depth_stencil_target(Framebuffer* framebuffer, const D
 	framebuffer->depth_target = desc.texture;
 	GL_CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->id));
 
+#ifndef __EMSCRIPTEN__
 	if (desc.texture->gl_texture_target == GL_TEXTURE_1D_ARRAY ||
 		desc.texture->gl_texture_target == GL_TEXTURE_2D_ARRAY ||
 		desc.texture->gl_texture_target == GL_TEXTURE_CUBE_MAP_ARRAY)
+#else
+	if (desc.texture->gl_texture_target == GL_TEXTURE_2D_ARRAY)
+#endif
 	{
 		int layer = desc.arraySlice;
 
@@ -490,7 +547,7 @@ void RenderDevice::attach_depth_stencil_target(Framebuffer* framebuffer, const D
 	}
 	else
 	{
-		GL_CHECK_ERROR(glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, desc.texture->id, desc.mipSlice));
+		GL_CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, desc.texture->id, desc.mipSlice));
 	}
     
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -506,6 +563,7 @@ void RenderDevice::attach_depth_stencil_target(Framebuffer* framebuffer, const D
 			error += "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
 			break;
 		}
+#ifndef __EMSCRIPTEN__
 		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
 		{
 			error += "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS";
@@ -516,6 +574,7 @@ void RenderDevice::attach_depth_stencil_target(Framebuffer* framebuffer, const D
 			error += "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER";
 			break;
 		}
+#endif
 		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
 		{
 			error += "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
@@ -722,7 +781,7 @@ TextureCube* RenderDevice::create_texture_cube(const TextureCubeCreateDesc& desc
 	texture->format = kTextureFormatTable[desc.format][1];
 	texture->type = kTextureFormatTable[desc.format][2];
 
-	// Array order [+X, –X, +Y, –Y, +Z, –Z]
+	// Array order [+X, ï¿½X, +Y, ï¿½Y, +Z, ï¿½Z]
 	for (int i = 0; i < 6; i++)
 	{
 		GL_CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -858,6 +917,7 @@ SamplerState* RenderDevice::create_sampler_state(const SamplerStateCreateDesc& d
 
 	GL_CHECK_ERROR(glSamplerParameteri(samplerState->id, GL_TEXTURE_WRAP_S, kTextureWrapModeTable[desc.wrap_mode_u]));
 
+#ifndef __EMSCRIPTEN__
 	if (desc.wrap_mode_u == TextureWrapMode::CLAMP_TO_BORDER)
 	{
 		GLfloat borderColor[] = { desc.border_color[0], desc.border_color[1], desc.border_color[2], desc.border_color[3] };
@@ -879,12 +939,18 @@ SamplerState* RenderDevice::create_sampler_state(const SamplerStateCreateDesc& d
 		GLfloat borderColor[] = { desc.border_color[0], desc.border_color[1], desc.border_color[2], desc.border_color[3] };
 		GL_CHECK_ERROR(glSamplerParameterfv(samplerState->id, GL_TEXTURE_BORDER_COLOR, borderColor));
 	}
+#endif
 
 	// Texture Filtering
 
     if ((desc.min_filter == TextureFilteringMode::ANISOTROPIC_ALL || desc.mag_filter == TextureFilteringMode::ANISOTROPIC_ALL) && desc.max_anisotropy > 0)
     {
-        if (ogl_ext_EXT_texture_filter_anisotropic == ogl_LOAD_SUCCEEDED)
+#ifdef __EMSCRIPTEN__
+		bool result = false;
+#else
+		bool result = ogl_ext_EXT_texture_filter_anisotropic == ogl_LOAD_SUCCEEDED;
+#endif
+        if (result)
         {
             GLfloat glmaxAnisotropy;
             GL_CHECK_ERROR(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &glmaxAnisotropy));
@@ -1011,6 +1077,7 @@ void RenderDevice::destroy(Framebuffer* framebuffer)
 
 void RenderDevice::texture_extents(Texture* texture, const int& mipSlice, int& width, int& height)
 {
+#ifndef __EMSCRIPTEN__
 	GLenum target = texture->gl_texture_target;
 
 	if (texture->gl_texture_target == GL_TEXTURE_CUBE_MAP)
@@ -1023,15 +1090,18 @@ void RenderDevice::texture_extents(Texture* texture, const int& mipSlice, int& w
 	GL_CHECK_ERROR(glGetTexLevelParameteriv(target, mipSlice, GL_TEXTURE_HEIGHT, &height));
 
 	GL_CHECK_ERROR(glBindTexture(texture->gl_texture_target, 0));
+#endif
 }
 
 void RenderDevice::texture_data(Texture* texture, const int& mipSlice, const int& arraySlice, void* data)
 {
+#ifndef __EMSCRIPTEN__
 	const GLenum target = kTextureTargetTable[arraySlice];
 	GL_CHECK_ERROR(glActiveTexture(GL_TEXTURE0));
 	GL_CHECK_ERROR(glBindTexture(texture->gl_texture_target, texture->id));
 	GL_CHECK_ERROR(glGetTexImage(target, mipSlice, texture->format, texture->type, data));
 	GL_CHECK_ERROR(glBindTexture(texture->gl_texture_target, 0));
+#endif
 }
 
 void RenderDevice::bind_pipeline_state_object(PipelineStateObject* pso)
@@ -1082,12 +1152,14 @@ void RenderDevice::bind_rasterizer_state(RasterizerState* state)
 	else
 		glDisable(GL_CULL_FACE);
 
+#ifndef __EMSCRIPTEN__
 	GL_CHECK_ERROR(glPolygonMode(GL_FRONT_AND_BACK, state->polygon_mode));
 
 	if (state->enable_multisample)
 		glEnable(GL_MULTISAMPLE);
 	else
 		glDisable(GL_MULTISAMPLE);
+#endif
 
 	if (state->enable_scissor)
 		glEnable(GL_SCISSOR_TEST);
@@ -1172,16 +1244,22 @@ void RenderDevice::bind_shader_program(ShaderProgram* program)
 
 void* RenderDevice::map_buffer(Buffer* buffer, uint32_t type)
 {
+#ifndef __EMSCRIPTEN__
 	void* ptr = nullptr;
 	GL_CHECK_ERROR(glBindBuffer(buffer->buffer_type, buffer->id));
 	GL_CHECK_ERROR(ptr = glMapBuffer(buffer->buffer_type, kMapUsageTable[type]));
 	return ptr;
+#else
+	return nullptr;
+#endif
 }
 
 void RenderDevice::unmap_buffer(Buffer* buffer)
 {
+#ifndef __EMSCRIPTEN__
 	GL_CHECK_ERROR(glUnmapBuffer(buffer->buffer_type));
 	GL_CHECK_ERROR(glBindBuffer(buffer->buffer_type, 0));
+#endif
 }
 
 void RenderDevice::set_primitive_type(uint32_t primitive)
@@ -1207,7 +1285,9 @@ void RenderDevice::set_viewport(uint32_t width, uint32_t height, uint32_t top_le
 
 void RenderDevice::dispatch_compute(uint32_t x, uint32_t y, uint32_t z)
 {
+#ifndef __EMSCRIPTEN__
 	GL_CHECK_ERROR(glDispatchCompute(x, y, z));
+#endif
 }
 
 void RenderDevice::draw(uint32_t first_index, uint32_t count)
@@ -1225,9 +1305,11 @@ void RenderDevice::draw_indexed(uint32_t index_count)
 
 void RenderDevice::draw_indexed_base_vertex(uint32_t index_count, uint32_t base_index, uint32_t base_vertex)
 {
+#ifndef __EMSCRIPTEN__
 	GL_CHECK_ERROR(glDrawElementsBaseVertex(m_device_data.primitive_type,
 											index_count, 
 											((m_device_data.current_index_buffer) ? m_device_data.current_index_buffer->type : GL_UNSIGNED_INT), 
 											(void*)(sizeof(unsigned int) * base_index), 
 											base_vertex));
+#endif
 }

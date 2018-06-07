@@ -6,7 +6,11 @@
 
 //#if defined(GFX_BACKEND_GL4)
 
-#include <gl/gl_core_4_5.h>
+#ifdef __EMSCRIPTEN__
+	#include <GLES3/gl3.h>
+#else
+	#include <gl/gl_core_4_5.h>
+#endif
 
 #define MAX_RENDER_TARGETS 16
 
