@@ -31,7 +31,8 @@ elseif (GFX_BACKEND STREQUAL "vulkan")
     add_definitions(-DGFX_BACKEND_VK)
 
     list(APPEND GFX_HEADERS ${PROJECT_SOURCE_DIR}/include/gfx/vk/vk_device.h
-                            ${PROJECT_SOURCE_DIR}/include/gfx/vk/vk_types.h)
+                            ${PROJECT_SOURCE_DIR}/include/gfx/vk/vk_types.h
+                            ${PROJECT_SOURCE_DIR}/include/gfx/vk/vk_mem_alloc.h)
     set(GFX_SOURCE ${PROJECT_SOURCE_DIR}/src/vk/vk_device.cpp)
 elseif (GFX_BACKEND STREQUAL "direct3d11")
     add_definitions(-DGFX_BACKEND_D3D11)
@@ -43,7 +44,8 @@ elseif (GFX_BACKEND STREQUAL "direct3d12")
     add_definitions(-DGFX_BACKEND_D3D12)
 
     list(APPEND GFX_HEADERS ${PROJECT_SOURCE_DIR}/include/gfx/d3d12/d3d12_device.h
-                            ${PROJECT_SOURCE_DIR}/include/gfx/d3d12/d3d12_types.h)
+                            ${PROJECT_SOURCE_DIR}/include/gfx/d3d12/d3d12_types.h
+                            ${PROJECT_SOURCE_DIR}/include/gfx/d3d12/d3dx12.h)
     set(GFX_SOURCE ${PROJECT_SOURCE_DIR}/src/d3d12/d3d12_device.cpp)
 elseif (GFX_BACKEND STREQUAL "metal")
     add_definitions(-DGFX_BACKEND_MTL)
@@ -61,6 +63,4 @@ else()
     add_library(dwGraphics ${GFX_HEADERS} ${GFX_SOURCE})
 endif()
 
-if (${GFX_BACKEND} STREQUAL "opengl" OR ${GFX_BACKEND} STREQUAL "opengles" OR ${GFX_BACKEND} STREQUAL "vulkan")
-    target_link_libraries(dwGraphics ${GFX_LINK_LIBRARIES})
-endif()
+target_link_libraries(dwGraphics ${GFX_LINK_LIBRARIES})

@@ -19,7 +19,7 @@ if (NOT EMSCRIPTEN)
 endif()
 
 # Include directories
-set(GFX_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/include")
+set(GFX_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/include" PARENT_SCOPE)
 
 # Graphics API specific settings
 if (GFX_BACKEND STREQUAL "opengl")
@@ -39,10 +39,14 @@ elseif(GFX_BACKEND STREQUAL "opengles")
 	find_package(EGL REQUIRED)
 
 	# Libraries
-	set(GFX_LINK_LIBRARIES ${EGL_INCLUDE_DIR} ${OPENGLES2_INCLUDE_DIR} ${OPENGLES3_INCLUDE_DIR})
+	set(GFX_LINK_LIBRARIES ${EGL_INCLUDE_DIR} 
+						   ${OPENGLES2_INCLUDE_DIR} 
+						   ${OPENGLES3_INCLUDE_DIR})
 
 	# Append includes
-	list(APPEND GFX_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/cmake")
+	list(APPEND GFX_INCLUDE_DIRS "${OPENGLES2_INCLUDE_DIR}" 
+								 "${OPENGLES3_INCLUDE_DIR}" 
+								 "${EGL_INCLUDE_DIR}")
 elseif(GFX_BACKEND STREQUAL "vulkan")
 	message(STATUS "Building with Vulkan backend")
 
@@ -56,8 +60,18 @@ elseif(GFX_BACKEND STREQUAL "vulkan")
 	list(APPEND GFX_INCLUDE_DIRS ${VULKAN_INCLUDE_DIR})
 elseif(GFX_BACKEND STREQUAL "direct3d11")
 	message(STATUS "Building with Direct3D 11 backend")
+
+	# Libraries
+	set(GFX_LINK_LIBRARIES "d3d11.lib" 
+						   "dxgi.lib" 
+						   "d3dcompiler.lib")
 elseif(GFX_BACKEND STREQUAL "direct3d12")
 	message(STATUS "Building with Direct3D 12 backend")
+
+	# Libraries
+	set(GFX_LINK_LIBRARIES "d3d12.lib" 
+						   "dxgi.lib" 
+						   "d3dcompiler.lib")
 elseif(GFX_BACKEND STREQUAL "metal")
 	message(STATUS "Building with Metal backend")
 else()
