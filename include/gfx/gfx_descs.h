@@ -1,8 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-
-#define MAX_RENDER_TARGETS 16
+#include <gfx/gfx_enums.h>
 
 struct Shader;
 struct InputElement;
@@ -20,8 +19,7 @@ struct RenderDeviceInitData
 struct Texture1DCreateDesc
 {
     uint16_t width;
-    void**   data;
-    uint32_t format;
+	TextureFormat format;
     uint16_t array_slices;
     uint16_t mipmap_levels;
     uint32_t flags;
@@ -31,8 +29,7 @@ struct Texture2DCreateDesc
 {
     uint16_t width;
     uint16_t height;
-    void**   data;
-    uint32_t format;
+	TextureFormat format;
     uint16_t array_slices;
     uint16_t mipmap_levels;
     uint32_t flags;
@@ -43,8 +40,7 @@ struct Texture3DCreateDesc
     uint16_t width;
     uint16_t height;
     uint16_t depth;
-    void*    data;
-    uint32_t format;
+	TextureFormat format;
     uint16_t mipmap_levels;
     uint32_t flags;
 };
@@ -53,8 +49,7 @@ struct TextureCubeCreateDesc
 {
     uint16_t width;
     uint16_t height;
-    void**   data;
-    uint32_t format;
+	TextureFormat format;
     uint16_t array_slices;
     uint16_t mipmapLevels;
     uint32_t flags;
@@ -62,10 +57,9 @@ struct TextureCubeCreateDesc
 
 struct BufferCreateDesc
 {
-    void*	 data;
     uint32_t size;
-    uint32_t usage_type;
-    uint32_t data_type;
+	BufferUsage usage_type;
+	DataType data_type;
 };
 
 struct InputLayoutCreateDesc
@@ -85,22 +79,15 @@ struct VertexArrayCreateDesc
 struct RenderTargetDesc
 {
 	Texture* texture;
-	uint32_t arraySlice;
-	uint32_t mipSlice;
+	uint32_t array_slice;
+	uint32_t mip_slice;
 };
 
 struct DepthStencilTargetDesc
 {
 	Texture* texture;
-	uint32_t arraySlice;
-	uint32_t mipSlice;
-};
-
-struct FramebufferCreateDesc
-{
-	uint32_t			   renderTargetCount;
-	RenderTargetDesc       renderTargets[MAX_RENDER_TARGETS];
-	DepthStencilTargetDesc depthStencilTarget;
+	uint32_t array_slice;
+	uint32_t mip_slice;
 };
 
 struct DepthStencilStateCreateDesc
@@ -129,7 +116,7 @@ struct RasterizerStateCreateDesc
     bool     scissor;
 };
 
-struct SamplerStateCreateDesc
+struct SamplerCreateDesc
 {
     uint32_t min_filter;
     uint32_t mag_filter;
@@ -144,17 +131,14 @@ struct SamplerStateCreateDesc
 
 struct ShaderCreateDesc
 {
-    uint32_t    type;
-    const char* shader_source;
+    uint32_t type;
+    char* shader_source;
 };
 
 struct ShaderProgramCreateDesc
 {
-    Shader* vertex;
-    Shader* pixel;
-    Shader* geometry;
-    Shader* tessellation_control;
-    Shader* tessellation_evaluation;
+	uint32_t num_shaders;
+    Shader** shaders;
 };
 
 struct BlendStateCreateDesc
@@ -166,12 +150,4 @@ struct BlendStateCreateDesc
 	uint32_t src_func_alpha;
 	uint32_t dst_func_alpha;
 	uint32_t blend_op_alpha;
-};
-
-struct PipelineStateObjectCreateDesc
-{
-    DepthStencilStateCreateDesc depth_stencil_state;
-    RasterizerStateCreateDesc   rasterizer_state;
-    BlendStateCreateDesc        blend_state;
-    uint32_t                    primitive;
 };
