@@ -19,7 +19,9 @@ if (NOT EMSCRIPTEN)
 endif()
 
 # Include directories
-set(GFX_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/include" PARENT_SCOPE)
+set(GFX_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/include")
+
+set(GFX_EXPORT_INCLUDE_DIRS ${GFX_INCLUDE_DIRS} PARENT_SCOPE)
 
 # Graphics API specific settings
 if (GFX_BACKEND STREQUAL "opengl")
